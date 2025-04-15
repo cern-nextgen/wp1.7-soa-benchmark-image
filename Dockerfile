@@ -4,6 +4,6 @@ WORKDIR /root
 
 COPY install.sh /root
 
-RUN bash /root/install.sh
+RUN bash /root/install.sh && rm /root/install.sh
 
 CMD ["tail", "-f", "/dev/null"]
