@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: wp1.7-soa-benchmark:latest
 
 on:
   workflow_dispatch:
@@ -27,5 +27,5 @@ jobs:
         file: Dockerfile
         builder: ${{ steps.buildx.outputs.name }}
         push: true
-        tags: '${{ secrets.REGISTRY_URL }}/ngt-wp1.7/wp1.7-soa-benchmark-container:latest'
+        tags: '${{ secrets.REGISTRY_URL }}/ngt-wp1.7/wp1.7-soa-benchmark:latest'
 

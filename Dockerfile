@@ -1,4 +1,4 @@
-FROM docker.io/cern/alma9-base
+FROM registry.cern.ch/docker.io/cern/alma9-base:latest
 
 WORKDIR /root
 
