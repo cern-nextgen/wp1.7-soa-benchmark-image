@@ -17,3 +17,4 @@ cd boost_1_82_0
 cd ..
 rm -rf boost_1_82_0
 
+dnf clean all
