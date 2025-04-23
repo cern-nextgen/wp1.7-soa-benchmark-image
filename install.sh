@@ -17,4 +17,9 @@ cd boost_1_82_0
 cd ..
 rm -rf boost_1_82_0
 
+# install python libraries
+dnf install -y python3-pip
+pip3 install --upgrade pip
+pip3 install matplotlib pandas
+
 dnf clean all
