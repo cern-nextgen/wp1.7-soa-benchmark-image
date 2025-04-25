@@ -3,7 +3,7 @@
 dnf install -y 'dnf-command(config-manager)'
 dnf config-manager --set-enabled crb
 dnf install -y epel-release
-dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel wget
+dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel wget libfmt-dev
 dnf install -y git # not strictly needed
 
 # install boost-wave from source to get devel files
