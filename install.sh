@@ -3,12 +3,12 @@
 dnf install -y 'dnf-command(config-manager)'
 dnf config-manager --set-enabled crb
 dnf install -y epel-release
-dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel wget
+dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel wget unzip
 dnf install -y git # not strictly needed
 
 # install libfmt-devel
 wget https://github.com/fmtlib/fmt/releases/download/11.1.4/fmt-11.1.4.zip
-tar -xzf fmt-11.1.4.zip
+unzip fmt-11.1.4.zip
 rm fmt-11.1.4.zip
 cd fmt-11.1.4
 cmake .
