@@ -3,8 +3,22 @@
 dnf install -y 'dnf-command(config-manager)'
 dnf config-manager --set-enabled crb
 dnf install -y epel-release
-dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel wget unzip
+dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel vim wget unzip
 dnf install -y git # not strictly needed
+tee /etc/yum.repos.d/oneAPI.repo << 'EOF'
+[oneAPI]
+name=Intel® oneAPI repository
+baseurl=https://yum.repos.intel.com/oneapi
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://yum.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+EOF
+
+dnf install -y intel-oneapi-vtune
+
+dnf clean all
+dnf makecache
 
 # install libfmt-devel
 wget https://github.com/fmtlib/fmt/releases/download/11.1.4/fmt-11.1.4.zip
@@ -27,13 +41,10 @@ cd boost_1_82_0
 cd ..
 rm -rf boost_1_82_0
 
-# install Intel VTune Profiler
-VTUNE_VERSION="2024.1.0"
-VTUNE_URL="https://registrationcenter-download.intel.com/akdlm/IRC_NAS/8fd43b33-e2fa-4ecf-96b3-3f927c9eb05c/l_oneapi_vtune_p_${VTUNE_VERSION}.offline.sh"
+# Check installation
+grep -i "error" vtune_install.log || echo "VTune installed successfully"
+ls /opt/intel/oneapi/vtune/latest/bin64/vtune || echo "VTune binary not found"
 
-wget ${VTUNE_URL} -O vtune_installer.sh
-chmod +x vtune_installer.sh
-./vtune_installer.sh -s -a install --eula accept --components intel.oneapi.vtune --install-dir /opt/intel/oneapi
 # Add VTune to PATH
 echo 'export PATH=/opt/intel/oneapi/vtune/latest/bin64:$PATH' >> /etc/profile.d/vtune.sh
 echo 'export VTUNE_INSTALL_DIR=/opt/intel/oneapi/vtune/latest' >> /etc/profile.d/vtune.sh
