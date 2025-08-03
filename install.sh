@@ -3,7 +3,7 @@
 dnf install -y 'dnf-command(config-manager)'
 dnf config-manager --set-enabled crb
 dnf install -y epel-release
-dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel vim wget unzip
+dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel vim wget unzip which
 dnf install -y git # not strictly needed
 tee /etc/yum.repos.d/oneAPI.repo << 'EOF'
 [oneAPI]
@@ -29,6 +29,10 @@ cmake .
 make install
 cd ..
 rm -rf fmt-11.1.4
+
+# install CUDA development tools
+dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo
+dnf install -y cuda-cudart-devel-12-8 cuda-nvcc-12-8 cuda-profiler-api-12-8 cuda-nvrtc-devel-12-8
 
 # install boost-wave from source to get devel files
 wget https://archives.boost.io/release/1.82.0/source/boost_1_82_0.tar.gz
