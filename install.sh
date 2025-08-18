@@ -4,10 +4,9 @@ dnf install -y 'dnf-command(config-manager)'
 dnf config-manager --set-enabled crb
 dnf install -y epel-release
 dnf install -y clang gcc g++ google-benchmark-devel eigen3-devel vim wget unzip which
-dnf install -y git # not strictly needed
 
 # install cmake
-dnf install -y openssl-devel
+dnf install -y git openssl-devel
 git clone --depth 1 --branch v4.1.0 https://github.com/Kitware/CMake.git
 cd CMake 
 ./bootstrap
