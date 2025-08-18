@@ -7,6 +7,7 @@ dnf install -y clang gcc g++ google-benchmark-devel eigen3-devel vim wget unzip 
 dnf install -y git # not strictly needed
 
 # install cmake
+dnf install -y openssl-devel
 git clone --depth 1 --branch v4.1.0 https://github.com/Kitware/CMake.git
 cd CMake 
 ./bootstrap
