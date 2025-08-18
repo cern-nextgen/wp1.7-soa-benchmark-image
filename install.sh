@@ -3,8 +3,18 @@
 dnf install -y 'dnf-command(config-manager)'
 dnf config-manager --set-enabled crb
 dnf install -y epel-release
-dnf install -y clang gcc g++ cmake google-benchmark-devel eigen3-devel vim wget unzip which
+dnf install -y clang gcc g++ google-benchmark-devel eigen3-devel vim wget unzip which
 dnf install -y git # not strictly needed
+
+# install cmake
+git clone --depth 1 --branch v4.1.0 https://github.com/Kitware/CMake.git
+cd CMake 
+./bootstrap
+make
+make install
+cd ..
+rm -rf CMake
+
 tee /etc/yum.repos.d/oneAPI.repo << 'EOF'
 [oneAPI]
 name=Intel® oneAPI repository
