@@ -3,7 +3,7 @@
 dnf install -y 'dnf-command(config-manager)'
 dnf config-manager --set-enabled crb
 dnf install -y epel-release
-dnf install -y clang gcc g++ google-benchmark-devel eigen3-devel vim wget unzip which
+dnf install -y clang gcc g++ eigen3-devel vim wget unzip which
 
 # install cmake
 dnf install -y git openssl-devel
@@ -14,6 +14,15 @@ make
 make install
 cd ..
 rm -rf CMake
+
+# install google-benchmark
+git clone --depth 1 --branch v1.9.4 https://github.com/google/benchmark.git
+cd benchmark
+cmake -E make_directory "build"
+cmake -E chdir "build" cmake -DBENCHMARK_DOWNLOAD_DEPENDENCIES=on -DCMAKE_BUILD_TYPE=Release ../
+cmake --build "build" --config Release
+cmake -E chdir "build" ctest --build-config Release
+cmake --build "build" --config Release --target install
 
 tee /etc/yum.repos.d/oneAPI.repo << 'EOF'
 [oneAPI]
