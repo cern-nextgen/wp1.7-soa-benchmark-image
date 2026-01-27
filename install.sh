@@ -8,7 +8,7 @@ dnf install -y clang gcc g++ eigen3-devel vim wget unzip which
 # install cmake
 dnf install -y git openssl-devel
 git clone --depth 1 --branch v4.1.0 https://github.com/Kitware/CMake.git
-cd CMake 
+cd CMake
 ./bootstrap
 make
 make install
@@ -76,5 +76,17 @@ echo 'export VTUNE_INSTALL_DIR=/opt/intel/oneapi/vtune/latest' >> /etc/profile.d
 dnf install -y python3-pip
 pip3 install --upgrade pip
 pip3 install matplotlib pandas
+
+git clone --depth 1 --branch p2996 https://github.com/bloomberg/clang-p2996.git \
+    && cd clang-p2996 \
+    && dnf install -y lld \
+    && mkdir build \
+    && cmake -S llvm -B build -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=/usr/bin/clang -DLLVM_ENABLE_LLD=on \
+        -DLLVM_BUILD_LLVM_DYLIB=ON -DLLVM_LINK_LLVM_DYLIB=on -DLLVM_APPEND_VC_REV=off -DLLVM_ENABLE_ASSERTIONS=on \
+        -DLLVM_ENABLE_PROJECTS='clang;clang-tools-extra;lld' -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind"  \
+        -DCMAKE_INSTALL_PREFIX=/data/apps/clang-p2996/install -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_DOCS=OFF      \
+        -DLLVM_BUILD_BENCHMARKS=OFF -DLIBCXX_INSTALL_MODULES=ON -DLLDB_ENABLE_PYTHON=0 \
+    && cmake --build build -j $(nproc) \
+    && cd ..
 
 dnf clean all
