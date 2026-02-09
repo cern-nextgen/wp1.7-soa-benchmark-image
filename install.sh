@@ -84,7 +84,7 @@ dnf install -y lld
 mkdir build 
 cmake -S llvm -B build -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=/usr/bin/clang -DLLVM_ENABLE_LLD=ON \
         -DLLVM_BUILD_LLVM_DYLIB=ON -DLLVM_LINK_LLVM_DYLIB=ON -DLLVM_APPEND_VC_REV=OFF -DLLVM_ENABLE_ASSERTIONS=ON \
-        -DLLVM_ENABLE_PROJECTS='clang;clang-tools-extra;lld' -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \  
+        -DLLVM_ENABLE_PROJECTS='clang;clang-tools-extra;lld' -DLLVM_ENABLE_RUNTIMES="libc;libcxx;libcxxabi;libunwind" \
         -DCMAKE_INSTALL_PREFIX=/root/clang-p2996/install -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_DOCS=OFF \
         -DLLVM_BUILD_BENCHMARKS=OFF -DLIBCXX_INSTALL_MODULES=ON -DLLDB_ENABLE_PYTHON=0 
 cmake --build build -j $(nproc) 
