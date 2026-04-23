@@ -94,17 +94,39 @@ RUN mkdir ${EIGEN_SOURCE} \
     && mv ${EIGEN_SOURCE}/Eigen ${EIGEN_INCLUDE}/Eigen
 
 
+FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9 as benchmark-builder
+
+ENV BENCHMARK_SOURCE=/tmp/benchmark
+ENV BENCHMARK_BUILD=/tmp/benchmark-build
+ENV BENCHMARK_INSTALL_PREFIX=/opt/benchmark
+
+RUN dnf install -y gcc gcc-c++ git make cmake
+
+WORKDIR ${BENCHMARK_SOURCE}
+
+RUN git clone --depth 1 --branch v1.9.5 https://github.com/google/benchmark.git ${BENCHMARK_SOURCE}
+
+RUN cmake -B ${BENCHMARK_BUILD} -S ${BENCHMARK_SOURCE} \
+        -DBENCHMARK_DOWNLOAD_DEPENDENCIES=ON \
+        -DCMAKE_INSTALL_PREFIX=${BENCHMARK_INSTALL_PREFIX} \
+        -DCMAKE_BUILD_TYPE=Release \
+    && cmake --build ${BENCHMARK_BUILD} --config Release \
+    && cmake -E chdir ${BENCHMARK_BUILD} \
+        ctest --build-config Release --exclude-regex locale_impermeability_test \
+    && cmake --build ${BENCHMARK_BUILD} --config Release --target install
+
+
 FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9
 
 COPY --from=gcc-builder /opt/gcc /usr/local
 COPY --from=clang-builder /opt/clang /usr/local
 COPY --from=eigen-builder /opt/eigen /usr/local/include
+COPY --from=benchmark-builder /opt/benchmark /usr/local
 
-# install CUDA development tools
 RUN dnf upgrade -y \
-    && dnf install -y git which \
-    && dnf install -y python3-pip cuda-cudart-devel-12-8 cuda-nvcc-12-8 \
-    && python3 -m pip install cmake google-benchmark matplotlib pandas \
+    && dnf install -y git which python3-pip cuda-cudart-devel-12-8 cuda-nvcc-12-8 \
+    && dnf clean all \
+    && python3 -m pip install cmake matplotlib pandas --no-cache-dir \
     && echo "/usr/local/lib64" > /etc/ld.so.conf.d/local.conf \
     && echo "/usr/local/lib" >> /etc/ld.so.conf.d/local.conf \
     && ldconfig
