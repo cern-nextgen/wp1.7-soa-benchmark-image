@@ -81,17 +81,20 @@ RUN cmake -S ${CLANG_SOURCE}/llvm -B ${CLANG_BUILD} \
 
 FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9 as eigen-builder
 
-ENV EIGEN_VERSION=5.0.0
 ENV EIGEN_SOURCE=/tmp/eigen
-ENV EIGEN_INCLUDE=/opt/eigen
+ENV EIGEN_BUILD=/tmp/eigen-build
+ENV EIGEN_INSTALL_PREFIX=/opt/eigen
 
-WORKDIR ${EIGEN_INCLUDE}
+RUN dnf install -y gcc gcc-c++ git make cmake
 
-RUN mkdir ${EIGEN_SOURCE} \
-    && curl -o ${EIGEN_SOURCE}/eigen-${EIGEN_VERSION}.tar.gz \
-    https://gitlab.com/libeigen/eigen/-/archive/${EIGEN_VERSION}/eigen-${EIGEN_VERSION}.tar.gz \
-    && tar -xf ${EIGEN_SOURCE}/eigen-${EIGEN_VERSION}.tar.gz -C ${EIGEN_SOURCE} --strip-components=1 \
-    && mv ${EIGEN_SOURCE}/Eigen ${EIGEN_INCLUDE}/Eigen
+WORKDIR ${EIGEN_SOURCE}
+
+RUN git clone --depth 1 --branch 5.0.1 https://gitlab.com/libeigen/eigen.git ${EIGEN_SOURCE}
+
+RUN cmake -S ${EIGEN_SOURCE} -B ${EIGEN_BUILD} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=${EIGEN_INSTALL_PREFIX} \
+    && cmake --build ${EIGEN_BUILD} --target install
 
 
 FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9 as benchmark-builder
@@ -120,7 +123,7 @@ FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9
 
 COPY --from=gcc-builder /opt/gcc /usr/local
 COPY --from=clang-builder /opt/clang /usr/local
-COPY --from=eigen-builder /opt/eigen /usr/local/include
+COPY --from=eigen-builder /opt/eigen /usr/local
 COPY --from=benchmark-builder /opt/benchmark /usr/local
 
 RUN dnf upgrade -y \
