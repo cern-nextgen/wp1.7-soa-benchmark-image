@@ -127,9 +127,9 @@ COPY --from=eigen-builder /opt/eigen /usr/local
 COPY --from=benchmark-builder /opt/benchmark /usr/local
 
 RUN dnf upgrade -y \
-    && dnf install -y git which python3-pip cuda-cudart-devel-12-8 cuda-nvcc-12-8 \
+    && dnf install -y gcc-toolset-14 git which python3-pip cuda-cudart-devel-12-8 cuda-nvcc-12-8 \
     && dnf clean all \
-    && python3 -m pip install cmake matplotlib pandas --no-cache-dir \
+    && python3 -m pip install cmake matplotlib --no-cache-dir \
     && echo "/usr/local/lib64" > /etc/ld.so.conf.d/local.conf \
     && echo "/usr/local/lib" >> /etc/ld.so.conf.d/local.conf \
     && ldconfig
