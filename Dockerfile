@@ -3,6 +3,7 @@ FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9 as gcc-build
 ENV GCC_SOURCE=/tmp/gcc
 ENV GCC_BUILD=/tmp/gcc-build
 ENV GCC_INSTALL_PREFIX=/opt/gcc
+ENV GCC_VERSION=16.1.0
 
 RUN dnf update -y \
     && dnf install -y \
@@ -16,7 +17,7 @@ RUN dnf update -y \
     binutils \
     python3
 
-RUN git clone --depth 1 https://gcc.gnu.org/git/gcc.git ${GCC_SOURCE}
+RUN git clone --depth 1 --branch releases/gcc-${GCC_VERSION} https://gcc.gnu.org/git/gcc.git ${GCC_SOURCE}
 
 WORKDIR ${GCC_SOURCE}
 
@@ -38,6 +39,7 @@ FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9 as clang-bui
 ENV CLANG_SOURCE=/tmp/clang
 ENV CLANG_BUILD=/tmp/clang-build
 ENV CLANG_INSTALL_PREFIX=/opt/clang
+ENV CLANG_VERSION=22.1.5
 
 RUN dnf update -y \
     && dnf install -y \
@@ -56,7 +58,7 @@ RUN dnf update -y \
     glibc-headers \
     && python3 -m pip install pyyaml
 
-RUN git clone --depth 1 https://github.com/llvm/llvm-project.git ${CLANG_SOURCE}
+RUN git clone --depth 1 --branch llvmorg-${CLANG_VERSION} https://github.com/llvm/llvm-project.git ${CLANG_SOURCE}
 
 WORKDIR ${CLANG_SOURCE}
 
@@ -84,12 +86,13 @@ FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9 as eigen-bui
 ENV EIGEN_SOURCE=/tmp/eigen
 ENV EIGEN_BUILD=/tmp/eigen-build
 ENV EIGEN_INSTALL_PREFIX=/opt/eigen
+ENV EIGEN_VERSION=5.0.1
 
 RUN dnf install -y gcc gcc-c++ git make cmake
 
 WORKDIR ${EIGEN_SOURCE}
 
-RUN git clone --depth 1 --branch 5.0.1 https://gitlab.com/libeigen/eigen.git ${EIGEN_SOURCE}
+RUN git clone --depth 1 --branch ${EIGEN_VERSION} https://gitlab.com/libeigen/eigen.git ${EIGEN_SOURCE}
 
 RUN cmake -S ${EIGEN_SOURCE} -B ${EIGEN_BUILD} \
         -DCMAKE_BUILD_TYPE=Release \
@@ -102,12 +105,13 @@ FROM registry.cern.ch/docker.io/nvidia/cuda:12.8.1-base-rockylinux9 as benchmark
 ENV BENCHMARK_SOURCE=/tmp/benchmark
 ENV BENCHMARK_BUILD=/tmp/benchmark-build
 ENV BENCHMARK_INSTALL_PREFIX=/opt/benchmark
+ENV BENCHMARK_VERSION=v1.9.5
 
 RUN dnf install -y gcc gcc-c++ git make cmake
 
 WORKDIR ${BENCHMARK_SOURCE}
 
-RUN git clone --depth 1 --branch v1.9.5 https://github.com/google/benchmark.git ${BENCHMARK_SOURCE}
+RUN git clone --depth 1 --branch ${BENCHMARK_VERSION} https://github.com/google/benchmark.git ${BENCHMARK_SOURCE}
 
 RUN cmake -B ${BENCHMARK_BUILD} -S ${BENCHMARK_SOURCE} \
         -DBENCHMARK_DOWNLOAD_DEPENDENCIES=ON \
